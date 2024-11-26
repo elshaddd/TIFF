@@ -1,4 +1,4 @@
 /images/*
-/bin
+/build/*
 /app/*
-/binary/*
+/binary
