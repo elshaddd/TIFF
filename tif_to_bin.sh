@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $# -ne 2 ]]; then
+    echo "Использование: $0 <входной бинарный файл> <выходной TIFF-файл>"
+    exit 1
+fi
+
 INPUT_FILE="$1"
 OUTPUT_FILE="$2"
 
