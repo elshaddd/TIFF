@@ -5,9 +5,9 @@
 
 int main()
 {
-    const char *filename = "DSC00494.TIF"; // Путь к вашему TIFF файлу
+    const char *filename = "images/DSC00494.TIF"; // path
 
-    // Открываем TIFF файл
+    // open tiff file
     TIFFSetWarningHandler(NULL);
     TIFF *tif = TIFFOpen(filename, "r");
     
@@ -17,7 +17,7 @@ int main()
         return 1;
     }
 
-    // Получение размеров изображения
+    // parameters of image
     uint32_t width, height;
     uint16_t samplesPerPixel, bitsPerSample;
     TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
@@ -28,19 +28,19 @@ int main()
     std::cout << "Размеры изображения: " << width << "x" << height << std::endl;
     std::cout << "Каналов: " << samplesPerPixel << ", Бит на канал: " << bitsPerSample << std::endl;
 
-    // Проверяем, что изображение 16-битное
+    // check 16 bits
     if (bitsPerSample != 16)
     {
-        std::cerr << "Ошибка: Ожидалось 16-битное изображение!" << std::endl;
+        std::cerr << "Ошибка: Изображение не 16-битное !" << std::endl;
         TIFFClose(tif);
         return 1;
     }
 
-    // Расчет размера строки в пикселях и выделение памяти для одной строки
-    size_t scanlineSize = TIFFScanlineSize(tif) / 2; // 16 бит = 2 байта
+    // malloc
+    size_t scanlineSize = TIFFScanlineSize(tif) / 2; // 16 bits = 2 bytes
     std::vector<uint16_t> scanline(scanlineSize);
 
-    // Чтение пикселей построчно
+    // read
     for (uint32_t row = 0; row < height; ++row)
     {
         if (TIFFReadScanline(tif, scanline.data(), row) < 0)
@@ -50,29 +50,30 @@ int main()
             return 1;
         }
 
-        // Пример обработки первого пикселя строки
+        // first pixel handling
         for (uint32_t col = 0; col < width; ++col)
         {
             for (uint16_t channel = 0; channel < samplesPerPixel; ++channel)
             {
-                // Каждый канал пикселя
+                // each channel of a pixel
                 uint16_t pixelValue = scanline[col * samplesPerPixel + channel];
                 std::cout << "Пиксель (" << row << ", " << col << "), Канал "
                           << channel << ": " << pixelValue << std::endl;
             }
-
+            
+            // interrupt
             if (col == 0)
             {
                 break;
             }
         }
 
-        // Прерываем вывод после одной строки для примера
+        // interrupt
         if (row == 0)
             break;
     }
 
-    // Закрываем файл
+    // file close
     TIFFClose(tif);
     std::cout << "Чтение завершено успешно." << std::endl;
 
