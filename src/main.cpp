@@ -2,15 +2,41 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
+#include <string>
+#include <fstream>
 
 int main()
 {
-    const char *filename = "images/DSC00494.TIF"; // path
+    std::cout << "Введите номер изображения: " << std::endl;
+    int number;
+    std::cin >> number;
+
+    std::cout << "Изображение черно-белое? " << std::endl;
+    char key;
+    std::cin >> key;
+    std::string sufix;
+
+    switch (key)
+    {
+    case 'y':
+        sufix = "_bw";
+        break;
+
+    default:
+        sufix = "";
+        break;
+    };
+
+    std::string folder = "images/";
+    std::string prefix = "DSC00";
+    std::string extension = ".TIF";
+
+    std::string filename = folder + prefix + std::to_string(number) + sufix + extension; // path images/DSC00494_bw.TIF
 
     // open tiff file
     TIFFSetWarningHandler(NULL);
-    TIFF *tif = TIFFOpen(filename, "r");
-    
+    TIFF *tif = TIFFOpen(filename.c_str(), "r");
+
     if (!tif)
     {
         std::cerr << "Ошибка: Не удалось открыть файл " << filename << std::endl;
@@ -60,7 +86,7 @@ int main()
                 std::cout << "Пиксель (" << row << ", " << col << "), Канал "
                           << channel << ": " << pixelValue << std::endl;
             }
-            
+
             // interrupt
             if (col == 0)
             {
