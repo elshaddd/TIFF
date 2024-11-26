@@ -1,2 +1,4 @@
-/images
-/bin
+/images/*
+/bin/*
+/app/*
+/binary/*
