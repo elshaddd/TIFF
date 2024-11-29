@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include <fstream>
-#include "BinaryHeader.h"
+#include "BinaryHeader.hpp"
 
 int main(int argc, char *argv[])
 {

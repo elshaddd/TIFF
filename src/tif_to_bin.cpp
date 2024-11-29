@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include <fstream>
-#include "BinaryHeader.h"
+#include "BinaryHeader.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -32,9 +32,6 @@ int main(int argc, char *argv[])
     TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &header.samplesPerPixel);
     TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &header.bitsPerSample);
 
-    // std::cout << "Размеры изображения: " << header.width << "x" << header.height << std::endl;
-    // std::cout << "Каналов: " << header.samplesPerPixel << ", Бит на канал: " << header.bitsPerSample << std::endl;
-
     if (header.bitsPerSample != 16)
     {
         std::cerr << "Ошибка: Изображение не 16-битное!" << std::endl;
@@ -42,7 +39,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    size_t scanlineSize = TIFFScanlineSize(tif) / 2; // 16 бит = 2 байта
+    size_t scanlineSize = TIFFScanlineSize(tif) / 2; // 16 bits = 2 bytes
     std::vector<uint16_t> scanline(scanlineSize);
 
     std::ofstream outFile(outputFilename, std::ios::binary);
