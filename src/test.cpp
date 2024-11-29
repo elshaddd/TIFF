@@ -16,17 +16,23 @@ int main()
                   << ", Высота: " << imgData.height
                   << ", Каналы: " << imgData.samplesPerPixel << std::endl;
 
-        // gradient
-        for (uint32_t row = 0; row < imgData.height; ++row)
-        {
-            for (uint32_t col = 0; col < imgData.width; ++col)
-            {
-                imgData.data[row][col][0] = static_cast<uint16_t>((row + col) % 65536);
-                imgData.data[row][col][1] = static_cast<uint16_t>((row * 2) % 65536);
-                imgData.data[row][col][2] = static_cast<uint16_t>((col * 2) % 65536);
-            }
-        }
-        std::string outputFilename = "binary/gradient.bin";
+        // // градиент
+        // for (uint32_t row = 0; row < imgData.height; ++row)
+        // {
+        //     for (uint32_t col = 0; col < imgData.width; ++col)
+        //     {
+        //         for (uint32_t channel = 0; channel < imgData.samplesPerPixel; ++channel)
+        //         {
+        //             if (channel == 0)
+        //                 imgData.at(row, col, channel) = static_cast<uint16_t>((row + col) % 65536);
+        //             else if (channel == 1)
+        //                 imgData.at(row, col, channel) = static_cast<uint16_t>((row * 2) % 65536);
+        //             else
+        //                 imgData.at(row, col, channel) = static_cast<uint16_t>((col * 2) % 65536);
+        //         }
+        //     }
+        // }
+        std::string outputFilename = "binary/output.bin";
         arrayToBinary(outputFilename, imgData);
 
         std::cout << "Данные успешно обработаны и сохранены!" << std::endl;

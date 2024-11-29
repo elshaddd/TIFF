@@ -7,10 +7,20 @@
 
 struct ImageData
 {
-    std::vector<std::vector<std::vector<uint16_t>>> data;
+    std::vector<uint16_t> data;
     uint32_t width;
     uint32_t height;
     uint32_t samplesPerPixel;
+
+    uint16_t &at(uint32_t row, uint32_t col, uint32_t channel)
+    {
+        return data[(row * width + col) * samplesPerPixel + channel];
+    }
+
+    const uint16_t &at(uint32_t row, uint32_t col, uint32_t channel) const
+    {
+        return data[(row * width + col) * samplesPerPixel + channel];
+    }
 };
 
 ImageData binaryToArray(const std::string &filename)
@@ -33,27 +43,23 @@ ImageData binaryToArray(const std::string &filename)
         throw std::runtime_error("Ошибка: Изображение не 16-битное!");
     }
 
-    std::vector<std::vector<std::vector<uint16_t>>> image(
-        header.height,
-        std::vector<std::vector<uint16_t>>(header.width,
-                                           std::vector<uint16_t>(header.samplesPerPixel)));
+    ImageData imgData;
+    imgData.width = header.width;
+    imgData.height = header.height;
+    imgData.samplesPerPixel = header.samplesPerPixel;
 
-    for (uint32_t row = 0; row < header.height; ++row)
+    // alloc
+    imgData.data.resize(header.width * header.height * header.samplesPerPixel);
+
+    inFile.read(reinterpret_cast<char *>(imgData.data.data()),
+                imgData.data.size() * sizeof(uint16_t));
+    if (!inFile)
     {
-        for (uint32_t col = 0; col < header.width; ++col)
-        {
-            inFile.read(reinterpret_cast<char *>(image[row][col].data()),
-                        header.samplesPerPixel * sizeof(uint16_t));
-            if (!inFile)
-            {
-                throw std::runtime_error("Ошибка: Не удалось прочитать данные пикселей!");
-            }
-        }
+        throw std::runtime_error("Ошибка: Не удалось прочитать данные изображения!");
     }
 
     inFile.close();
-
-    return {image, header.width, header.height, header.samplesPerPixel};
+    return imgData;
 }
 
 void arrayToBinary(const std::string &filename, const ImageData &imgData)
@@ -73,14 +79,8 @@ void arrayToBinary(const std::string &filename, const ImageData &imgData)
 
     outFile.write(reinterpret_cast<const char *>(&header), sizeof(BinaryHeader));
 
-    for (uint32_t row = 0; row < imgData.height; ++row)
-    {
-        for (uint32_t col = 0; col < imgData.width; ++col)
-        {
-            outFile.write(reinterpret_cast<const char *>(imgData.data[row][col].data()),
-                          imgData.samplesPerPixel * sizeof(uint16_t));
-        }
-    }
+    outFile.write(reinterpret_cast<const char *>(imgData.data.data()),
+                  imgData.data.size() * sizeof(uint16_t));
 
     outFile.close();
     std::cout << "Бинарный файл успешно сохранён: " << filename << std::endl;
